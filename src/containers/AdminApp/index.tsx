@@ -17,13 +17,13 @@ const allRoutes = routeDomains.reduce<RouteData[]>((prev, curr) => {
 }, []);
 const AdminApp = () => {
   return (
-    <div className="h-screen flex flex-col ">
+    <div className="h-screen flex flex-col  overflow-hidden">
       <ThemeProvider defaultTheme="dark">
         <Header domains={routeDomains} />
 
         <div className="flex h-full overflow-hidden ">
           <SideNavigation domains={routeDomains} />
-          <main className="w-full flex-1 ">
+          <main className="w-full flex-1  overflow-auto pt-14">
             <Routes>
               {allRoutes.map((route) => {
                 return (

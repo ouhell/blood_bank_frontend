@@ -11,7 +11,7 @@ type Props = {
 const SideNavigation = ({ domains }: Props) => {
   return (
     <m.nav
-      className="w-64 min-w-64  h-full max-h-full px-4 py-8 overflow-auto"
+      className="w-64 min-w-64  h-full max-h-full px-4 pt-20 pb-8 overflow-auto "
       initial={{
         opacity: 0,
         x: -10,

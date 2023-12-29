@@ -19,24 +19,10 @@ export const columns: ColumnDef<ColumnType>[] = [
   {
     accessorKey: "fullName",
     header: "Name",
-    cell: ({ row }) => {
-      return (
-        <div className="whitespace-nowrap max-w-32   overflow-hidden overflow-ellipsis">
-          {row.original.fullName}
-        </div>
-      );
-    },
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => {
-      return (
-        <div className="whitespace-nowrap max-w-44   overflow-hidden overflow-ellipsis">
-          {row.original.email}
-        </div>
-      );
-    },
   },
   {
     accessorKey: "role",
@@ -52,7 +38,6 @@ export const columns: ColumnDef<ColumnType>[] = [
   },
   {
     id: "actions",
-    header: "app_loader",
     cell: ({ row }) => {
       const userId = row.original.id;
       const isEnabled = row.original.isEnabled;
