@@ -1,4 +1,10 @@
-import { Droplets, HeartHandshake, LucideIcon, User } from "lucide-react";
+import {
+  Building2,
+  Droplets,
+  HeartHandshake,
+  LucideIcon,
+  User,
+} from "lucide-react";
 import { ReactNode } from "react";
 import AddAccount from "./pages/AddAccount";
 import ListAccounts from "./pages/ListAccounts";
@@ -25,7 +31,7 @@ export type RouteDomain = {
 const managementRoutes: RouteConfig[] = [
   {
     parentPath: "",
-    name: "Account Management",
+    name: "Accounts",
     routes: [
       {
         name: "Add Doctor",
@@ -42,7 +48,7 @@ const managementRoutes: RouteConfig[] = [
   },
   {
     parentPath: "",
-    name: "Demand Management",
+    name: "Demands",
     routes: [
       {
         name: "Arrange Appointments",
@@ -59,7 +65,7 @@ const managementRoutes: RouteConfig[] = [
   },
   {
     parentPath: "",
-    name: "Donation Management",
+    name: "Donations",
     routes: [
       {
         name: "Arrange Appointments",
@@ -73,6 +79,23 @@ const managementRoutes: RouteConfig[] = [
       },
     ],
     icon: Droplets,
+  },
+  {
+    parentPath: "",
+    name: "Hospitals",
+    routes: [
+      {
+        name: "Add Hospital",
+        path: "/management/donations/add",
+        element: null,
+      },
+      {
+        name: "List Hospitals",
+        path: "/management/donations",
+        element: null,
+      },
+    ],
+    icon: Building2,
   },
 ];
 

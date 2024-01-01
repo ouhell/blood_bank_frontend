@@ -78,6 +78,11 @@ export type AccountProfile = {
   isEnabled: boolean;
 };
 
+export type Account = Partial<AccountProfile> & {
+  password?: string;
+  confirmPassword?: string;
+};
+
 export type DemandStatus =
   | "PENDING_TRANSFUSION"
   | "PENDING_CONSULTATION"

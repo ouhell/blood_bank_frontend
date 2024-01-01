@@ -1,12 +1,4 @@
 import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import { useSearchParams } from "react-router-dom";
 
@@ -14,8 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getPagedAccounts } from "@/api/apiCalls/admin";
 
 import { parse as parseStringToObject } from "qs";
-import { DataTable } from "./components/AccountsDataTable";
-import { columns } from "./components/AccountsColumns";
+import { DataTable } from "@/components/DataTable";
+import { columns } from "./components/DemandColumns";
 
 import NumberedPagination from "@/components/NumberedPagination";
 
@@ -67,7 +59,11 @@ function ListDemands() {
 
   return (
     <div className="page">
-      <DataTable data={accountsPage?.content || []} columns={columns} />
+      <DataTable
+        data={accountsPage?.content || []}
+        columns={columns}
+        isFetching
+      />
       <div className="py-4">
         <NumberedPagination
           currentPageNumber={currentPage}

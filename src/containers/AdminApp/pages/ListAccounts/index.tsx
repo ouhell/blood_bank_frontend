@@ -57,11 +57,16 @@ function ListAccounts() {
 
   const addSearchParamValues = (set: Record<string, string>) => {
     const newUrlSearchParams = new URLSearchParams();
+
     searchParams.forEach((key, val) => {
       newUrlSearchParams.set(val, key);
     });
+
+    newUrlSearchParams.delete("page");
+    newUrlSearchParams.set("page", "1");
     for (const key in set) {
       newUrlSearchParams.delete(key);
+
       if (set[key]?.trim()) newUrlSearchParams.set(key, set[key]);
     }
 

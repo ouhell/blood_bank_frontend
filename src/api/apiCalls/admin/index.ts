@@ -1,6 +1,13 @@
 import apiCenter from "@/api/apiCenter";
 import { mainServer } from "@/api/apiConfig";
-import { AccountProfile, DemandResp, Page } from "@/types/databaseModel";
+import {
+  Account,
+  AccountProfile,
+  DemandResp,
+  Hospital,
+  Page,
+} from "@/types/databaseModel";
+import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 export const getPagedAccounts = (config?: AxiosRequestConfig) => {
@@ -24,5 +31,28 @@ export const getPagedDemands = (config?: AxiosRequestConfig) => {
       Authorization: "Bearer " + apiCenter.accessToken,
       ...config?.headers,
     },
+  });
+};
+
+export const getAllHospitals = (config?: AxiosRequestConfig) => {
+  return axios<Hospital[]>({
+    ...config,
+    url: `${mainServer}/api/admin/hospitals`,
+    method: "get",
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+      ...config?.headers,
+    },
+  });
+};
+
+export const postDoctor = (config?: AxiosRequestConfig) => {
+  return axios({
+    method: "post",
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+    },
+    url: `${mainServer}/api/admin/accounts/doctor`,
+    ...config,
   });
 };

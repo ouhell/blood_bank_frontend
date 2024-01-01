@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { parseBloodGroup } from "@/utils/typeConverting";
 
 type ColumnType = AccountProfile;
 
@@ -45,6 +47,9 @@ export const columns: ColumnDef<ColumnType>[] = [
   {
     accessorKey: "bloodGroup",
     header: "Blood Group",
+    cell: ({ row }) => {
+      return <div>{parseBloodGroup(row.original.bloodGroup)}</div>;
+    },
   },
   {
     accessorKey: "isEnabled",
@@ -82,7 +87,11 @@ export const columns: ColumnDef<ColumnType>[] = [
               </DropdownMenuItem>
             )}
 
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>
+              <NavLink to={`/admin/management/accounts/${userId}/profile`}>
+                Profile
+              </NavLink>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
