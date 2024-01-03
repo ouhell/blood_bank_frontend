@@ -1,7 +1,12 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { AccountProfile, DemandResp } from "@/types/databaseModel";
+import {
+  AccountProfile,
+  AppointmentResp,
+  DemandResp,
+  DonationResp,
+} from "@/types/databaseModel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +22,7 @@ import { isAwaiting } from "@/utils/stateUtils";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-type ColumnType = DemandResp;
+type ColumnType = AppointmentResp;
 
 export const columns: ColumnDef<ColumnType>[] = [
   // {
@@ -29,23 +34,28 @@ export const columns: ColumnDef<ColumnType>[] = [
   //   header: "Email",
   // },
   {
-    accessorKey: "receiver",
-    header: "Receiver",
+    accessorKey: "donor",
+    header: "Donor",
     cell({ row }) {
-      const receiverId = row.original.receiverId;
+      const doctorId = row.original.doctorData.id;
       return (
         <NavLink
-          to={`/management/accounts/profile/${receiverId}`}
+          to={`/management/accounts/profile/${doctorId}`}
           className="capitalize hover:underline cursor-pointer"
         >
-          {parseStatus(row.original.receiver.fullName)}
+          {parseStatus(row.original.doctorData.fullName)}
         </NavLink>
       );
     },
   },
   {
-    accessorKey: "quantity",
-    header: "Quantity",
+    accessorKey: "reason",
+    header: "Reason",
+    cell: ({ row }) => {
+      return (
+        <div className="capitalize">{row.original?.reason?.toLowerCase()}</div>
+      );
+    },
   },
   {
     accessorKey: "date",
@@ -55,14 +65,12 @@ export const columns: ColumnDef<ColumnType>[] = [
     accessorKey: "status",
     header: "Status",
     cell({ row }) {
-      const isAwaitingAppointment = isAwaiting(row.original.status);
-      const isServed = row.original.status === "SERVED";
-      const isRejected = row.original.status === "REJECTED";
+      const isRejected =
+        row.original.status === "REJECTED" ||
+        row.original.status === "CANCELED";
       return (
         <div
           className={cn("capitalize", {
-            "text-orange-600": isAwaitingAppointment,
-            "text-green-500": isServed,
             "text-red-600": isRejected,
           })}
         >
@@ -75,9 +83,10 @@ export const columns: ColumnDef<ColumnType>[] = [
   {
     id: "actions",
     header: "app_loader",
+
     cell: ({ row }) => {
       const Id = row.original.id;
-      const isAwaitingAppointment = isAwaiting(row.original.status);
+      const isAwaitingAppointment = !row.original.validated;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -95,12 +104,10 @@ export const columns: ColumnDef<ColumnType>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {isAwaitingAppointment && (
-              <DropdownMenuItem className="text-green-500 hover:bg-green-500 hover:text-white">
-                <div>Assign Appointment</div>
+              <DropdownMenuItem className="text-red-500 hover:bg-red-500 hover:text-white">
+                <div>Cancel</div>
               </DropdownMenuItem>
             )}
-
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

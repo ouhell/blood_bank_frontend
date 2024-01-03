@@ -3,11 +3,15 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
-import { getPagedAccounts, getPagedDemands } from "@/api/apiCalls/admin";
+import {
+  getPagedAppointments,
+  getPagedDemands,
+  getPagedDonations,
+} from "@/api/apiCalls/admin";
 
 import { parse as parseStringToObject } from "qs";
 import { DataTable } from "@/components/DataTable";
-import { columns } from "./components/DemandColumns";
+import { columns } from "./AppointmentColumns";
 
 import NumberedPagination from "@/components/NumberedPagination";
 import { Input } from "@/components/ui/input";
@@ -20,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function ListDemands() {
+function ListAppointments() {
   const [searchParams, setSearchParams] = useSearchParams();
   const serializedSearchParams = React.useMemo<string>(() => {
     return searchParams.toString();
@@ -28,11 +32,11 @@ function ListDemands() {
   const searchParamsRecord = React.useMemo(() => {
     return parseStringToObject(serializedSearchParams);
   }, [serializedSearchParams]);
-  const { data: demandsPage, isFetching: isDemandsFetching } = useQuery({
-    queryKey: ["admin", "demands", serializedSearchParams],
+  const { data: donationsPage, isFetching: isAppointmentsFetching } = useQuery({
+    queryKey: ["admin", "appointments", serializedSearchParams],
 
     queryFn: async () => {
-      return getPagedDemands({
+      return getPagedAppointments({
         params: searchParamsRecord,
       });
     },
@@ -50,7 +54,7 @@ function ListDemands() {
     });
     for (const key in set) {
       newUrlSearchParams.delete(key);
-      if (set[key]?.trim()) newUrlSearchParams.set(key, set[key]);
+      newUrlSearchParams.set(key, set[key]);
     }
 
     setSearchParams(newUrlSearchParams);
@@ -63,13 +67,13 @@ function ListDemands() {
   };
 
   React.useEffect(() => {
-    console.log("demands page :", demandsPage);
+    console.log("donations page :", donationsPage);
     console.log("params :", searchParams.toString());
-  }, [demandsPage]);
+  }, [donationsPage]);
 
   return (
     <div className="page">
-      <h3 className="text-2xl">Demands </h3>
+      <h3 className="text-2xl">Appointments </h3>
       <div className="divider w-full h-[0.1rem] bg-muted mb-4 mt-2 font-semibold"></div>
       <div className="flex justify-between mb-4">
         <form
@@ -118,17 +122,17 @@ function ListDemands() {
         </Select>
       </div>
       <DataTable
-        data={demandsPage?.content || []}
+        data={donationsPage?.content || []}
         columns={columns}
-        isFetching={isDemandsFetching}
+        isFetching={isAppointmentsFetching}
       />
       <div className="py-4">
         <NumberedPagination
           currentPageNumber={currentPage}
-          totalPages={demandsPage?.totalPages ?? 1}
+          totalPages={donationsPage?.totalPages ?? 1}
           onClickPage={setPageSearchParam}
           onClickLastPage={() => {
-            setPageSearchParam(demandsPage ? demandsPage.totalElements : 1);
+            setPageSearchParam(donationsPage ? donationsPage.totalElements : 1);
           }}
           onClickFirstPage={() => {
             setPageSearchParam(1);
@@ -141,4 +145,4 @@ function ListDemands() {
   );
 }
 
-export default ListDemands;
+export default ListAppointments;

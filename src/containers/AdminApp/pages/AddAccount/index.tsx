@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Account, AccountProfile } from "@/types/databaseModel";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 type FormData = {
   fullName: string;
@@ -111,7 +112,25 @@ const AddAccount = () => {
             email: formData.email,
             password: formData.password,
             hospitalId: Number.parseInt(formData.hospitalId),
-          });
+          }).catch((err: AxiosError) => err);
+          if (result instanceof AxiosError) {
+            console.log("error : ", result);
+            toast.error("couldn't create doctor", {
+              style: {
+                backgroundColor: "red",
+              },
+            });
+          } else {
+            toast.success("Doctor has been created", {
+              description: result.fullName,
+              cancel: {
+                label: "remove",
+              },
+              style: {
+                backgroundColor: "green",
+              },
+            });
+          }
           console.log("added doc :", result);
         }}
         className=" flex h-full justify-center items-start pt-8"

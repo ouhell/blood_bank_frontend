@@ -1,7 +1,11 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { AccountProfile, DemandResp } from "@/types/databaseModel";
+import {
+  AccountProfile,
+  DemandResp,
+  DonationResp,
+} from "@/types/databaseModel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +21,7 @@ import { isAwaiting } from "@/utils/stateUtils";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-type ColumnType = DemandResp;
+type ColumnType = DonationResp;
 
 export const columns: ColumnDef<ColumnType>[] = [
   // {
@@ -29,16 +33,16 @@ export const columns: ColumnDef<ColumnType>[] = [
   //   header: "Email",
   // },
   {
-    accessorKey: "receiver",
-    header: "Receiver",
+    accessorKey: "donor",
+    header: "Donor",
     cell({ row }) {
-      const receiverId = row.original.receiverId;
+      const donorId = row.original.donorId;
       return (
         <NavLink
-          to={`/management/accounts/profile/${receiverId}`}
+          to={`/management/accounts/profile/${donorId}`}
           className="capitalize hover:underline cursor-pointer"
         >
-          {parseStatus(row.original.receiver.fullName)}
+          {parseStatus(row.original.donor.fullName)}
         </NavLink>
       );
     },
@@ -56,13 +60,13 @@ export const columns: ColumnDef<ColumnType>[] = [
     header: "Status",
     cell({ row }) {
       const isAwaitingAppointment = isAwaiting(row.original.status);
-      const isServed = row.original.status === "SERVED";
+      const isDonated = row.original.status === "ACCEPTED";
       const isRejected = row.original.status === "REJECTED";
       return (
         <div
           className={cn("capitalize", {
             "text-orange-600": isAwaitingAppointment,
-            "text-green-500": isServed,
+            "text-green-500": isDonated,
             "text-red-600": isRejected,
           })}
         >
@@ -75,6 +79,7 @@ export const columns: ColumnDef<ColumnType>[] = [
   {
     id: "actions",
     header: "app_loader",
+
     cell: ({ row }) => {
       const Id = row.original.id;
       const isAwaitingAppointment = isAwaiting(row.original.status);

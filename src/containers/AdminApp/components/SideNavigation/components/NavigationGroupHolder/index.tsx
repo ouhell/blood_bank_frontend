@@ -9,7 +9,7 @@ type Props = {
 
 const NavigationGroupHolder = ({ data }: Props) => {
   return (
-    <m.div className="path-holder flex flex-col gap-4 ">
+    <m.div className="path-holder flex flex-col gap-4 pl-4">
       {data.map((navGroup) => {
         return (
           <m.div

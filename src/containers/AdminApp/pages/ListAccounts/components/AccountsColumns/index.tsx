@@ -17,6 +17,21 @@ import { parseBloodGroup } from "@/utils/typeConverting";
 
 type ColumnType = AccountProfile;
 
+type AccountActions = {
+  setActive: (isActive: boolean) => void;
+};
+
+const actions: AccountActions = {
+  setActive: () => {},
+};
+
+export const setAccountActions = (newActions: Partial<AccountActions>) => {
+  const keys = Object.keys(newActions) as (keyof AccountActions)[];
+  for (const key of keys) {
+    actions[key] = newActions[key] ?? actions[key];
+  }
+};
+
 export const columns: ColumnDef<ColumnType>[] = [
   {
     accessorKey: "fullName",
@@ -78,17 +93,23 @@ export const columns: ColumnDef<ColumnType>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {isEnabled ? (
-              <DropdownMenuItem className="text-red-500">
+              <DropdownMenuItem
+                className="text-red-500"
+                onClick={() => actions.setActive(false)}
+              >
                 Disable
               </DropdownMenuItem>
             ) : (
-              <DropdownMenuItem className="text-green-500">
+              <DropdownMenuItem
+                className="text-green-500"
+                onClick={() => actions.setActive(true)}
+              >
                 Enable
               </DropdownMenuItem>
             )}
 
             <DropdownMenuItem>
-              <NavLink to={`/admin/management/accounts/${userId}/profile`}>
+              <NavLink to={`/management/accounts/profile/${userId}`}>
                 Profile
               </NavLink>
             </DropdownMenuItem>

@@ -3,11 +3,11 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
-import { getPagedAccounts, getPagedDemands } from "@/api/apiCalls/admin";
+import { getPagedDemands, getPagedDonations } from "@/api/apiCalls/admin";
 
 import { parse as parseStringToObject } from "qs";
 import { DataTable } from "@/components/DataTable";
-import { columns } from "./components/DemandColumns";
+import { columns } from "@/containers/AdminApp/pages/ListDonations/DonationColumns";
 
 import NumberedPagination from "@/components/NumberedPagination";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function ListDemands() {
+function ListDonations() {
   const [searchParams, setSearchParams] = useSearchParams();
   const serializedSearchParams = React.useMemo<string>(() => {
     return searchParams.toString();
@@ -28,11 +28,11 @@ function ListDemands() {
   const searchParamsRecord = React.useMemo(() => {
     return parseStringToObject(serializedSearchParams);
   }, [serializedSearchParams]);
-  const { data: demandsPage, isFetching: isDemandsFetching } = useQuery({
-    queryKey: ["admin", "demands", serializedSearchParams],
+  const { data: donationsPage, isFetching: isDonationsFetching } = useQuery({
+    queryKey: ["admin", "donations", serializedSearchParams],
 
     queryFn: async () => {
-      return getPagedDemands({
+      return getPagedDonations({
         params: searchParamsRecord,
       });
     },
@@ -63,13 +63,13 @@ function ListDemands() {
   };
 
   React.useEffect(() => {
-    console.log("demands page :", demandsPage);
+    console.log("donations page :", donationsPage);
     console.log("params :", searchParams.toString());
-  }, [demandsPage]);
+  }, [donationsPage]);
 
   return (
     <div className="page">
-      <h3 className="text-2xl">Demands </h3>
+      <h3 className="text-2xl">Donations</h3>
       <div className="divider w-full h-[0.1rem] bg-muted mb-4 mt-2 font-semibold"></div>
       <div className="flex justify-between mb-4">
         <form
@@ -78,7 +78,7 @@ function ListDemands() {
           }}
         >
           <Input
-            placeholder="receiver email or name"
+            placeholder="donor email or name"
             className="w-72"
             value={(searchParamsRecord.search as string) ?? ""}
             onChange={({ target: { value } }) => {
@@ -102,33 +102,33 @@ function ListDemands() {
               <SelectItem value="AWAITING_CONSULTATION">
                 Awaiting Consultation
               </SelectItem>
-              <SelectItem value="AWAITING_TRANSFUSION">
-                Awaiting Transfusion
+              <SelectItem value="AWAITING_EXTRACTION">
+                Awaiting Extraction
               </SelectItem>
               <SelectItem value="PENDING_CONSULTATION">
                 Pending Consultation
               </SelectItem>
-              <SelectItem value="PENDING_TRANSFUSION">
-                Pending Transfusion
+              <SelectItem value="PENDING_EXTRACTION">
+                Pending Extraction
               </SelectItem>
-              <SelectItem value="SERVED">Served</SelectItem>
+              <SelectItem value="ACCEPTED">Accepted</SelectItem>
               <SelectItem value="REJECTED">Rejected</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
       <DataTable
-        data={demandsPage?.content || []}
+        data={donationsPage?.content || []}
         columns={columns}
-        isFetching={isDemandsFetching}
+        isFetching={isDonationsFetching}
       />
       <div className="py-4">
         <NumberedPagination
           currentPageNumber={currentPage}
-          totalPages={demandsPage?.totalPages ?? 1}
+          totalPages={donationsPage?.totalPages ?? 1}
           onClickPage={setPageSearchParam}
           onClickLastPage={() => {
-            setPageSearchParam(demandsPage ? demandsPage.totalElements : 1);
+            setPageSearchParam(donationsPage ? donationsPage.totalElements : 1);
           }}
           onClickFirstPage={() => {
             setPageSearchParam(1);
@@ -141,4 +141,4 @@ function ListDemands() {
   );
 }
 
-export default ListDemands;
+export default ListDonations;

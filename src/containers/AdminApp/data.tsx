@@ -1,5 +1,6 @@
 import {
   Building2,
+  Calendar,
   Droplets,
   HeartHandshake,
   LucideIcon,
@@ -8,6 +9,9 @@ import {
 import { ReactNode } from "react";
 import AddAccount from "./pages/AddAccount";
 import ListAccounts from "./pages/ListAccounts";
+import ListDemands from "./pages/ListDemands";
+import ListDonations from "./pages/ListDonations";
+import ListAppointments from "./pages/ListAppointments";
 
 export type RouteData = {
   path: string;
@@ -58,7 +62,7 @@ const managementRoutes: RouteConfig[] = [
       {
         name: "List Demands",
         path: "/management/demands",
-        element: null,
+        element: <ListDemands />,
       },
     ],
     icon: HeartHandshake,
@@ -75,10 +79,22 @@ const managementRoutes: RouteConfig[] = [
       {
         name: "List Donations",
         path: "/management/donations",
-        element: null,
+        element: <ListDonations />,
       },
     ],
     icon: Droplets,
+  },
+  {
+    parentPath: "",
+    name: "Appointments",
+    routes: [
+      {
+        name: "List Appointments",
+        path: "/management/appointments",
+        element: <ListAppointments />,
+      },
+    ],
+    icon: Calendar,
   },
   {
     parentPath: "",
@@ -86,12 +102,12 @@ const managementRoutes: RouteConfig[] = [
     routes: [
       {
         name: "Add Hospital",
-        path: "/management/donations/add",
+        path: "/management/hospitals/add",
         element: null,
       },
       {
         name: "List Hospitals",
-        path: "/management/donations",
+        path: "/management/hospitals",
         element: null,
       },
     ],

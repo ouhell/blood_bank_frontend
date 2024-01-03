@@ -3,7 +3,9 @@ import { mainServer } from "@/api/apiConfig";
 import {
   Account,
   AccountProfile,
+  AppointmentResp,
   DemandResp,
+  DonationResp,
   Hospital,
   Page,
 } from "@/types/databaseModel";
@@ -34,6 +36,30 @@ export const getPagedDemands = (config?: AxiosRequestConfig) => {
   });
 };
 
+export const getPagedDonations = (config?: AxiosRequestConfig) => {
+  return axios<Page<DonationResp>>({
+    ...config,
+    url: `${mainServer}/api/admin/donations`,
+    method: "get",
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+      ...config?.headers,
+    },
+  });
+};
+
+export const getPagedAppointments = (config?: AxiosRequestConfig) => {
+  return axios<Page<AppointmentResp>>({
+    ...config,
+    url: `${mainServer}/api/admin/appointments`,
+    method: "get",
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+      ...config?.headers,
+    },
+  });
+};
+
 export const getAllHospitals = (config?: AxiosRequestConfig) => {
   return axios<Hospital[]>({
     ...config,
@@ -49,10 +75,11 @@ export const getAllHospitals = (config?: AxiosRequestConfig) => {
 export const postDoctor = (config?: AxiosRequestConfig) => {
   return axios({
     method: "post",
+    ...config,
     headers: {
       Authorization: "Bearer " + apiCenter.accessToken,
+      ...config?.headers,
     },
     url: `${mainServer}/api/admin/accounts/doctor`,
-    ...config,
   });
 };

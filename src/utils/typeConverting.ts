@@ -39,3 +39,7 @@ export const parseBloodGroup = (group: BloodGroup): ParsedBloodGroup => {
 export const unparseBloodGroup = (group: ParsedBloodGroup): BloodGroup => {
   return bloodGroupUnparseMap.get(group) as BloodGroup;
 };
+
+export const parseStatus = (status: string | undefined) => {
+  return status?.toLocaleLowerCase().replace("_", " ");
+};

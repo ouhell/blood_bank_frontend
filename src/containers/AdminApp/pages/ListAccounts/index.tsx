@@ -7,7 +7,7 @@ import { getPagedAccounts } from "@/api/apiCalls/admin";
 
 import { parse as parseStringToObject } from "qs";
 
-import { columns } from "./components/AccountsColumns";
+import { columns, setAccountActions } from "./components/AccountsColumns";
 
 import NumberedPagination from "@/components/NumberedPagination";
 import { DataTable } from "@/components/DataTable";
@@ -31,8 +31,6 @@ function ListAccounts() {
     return parseStringToObject(serializedSearchParams);
   }, [serializedSearchParams]);
 
-  const [search, setSearch] = React.useState("");
-  const [role, setRole] = React.useState("");
   const {
     data: accountsPage,
     isLoading,
@@ -80,16 +78,15 @@ function ListAccounts() {
   };
 
   React.useEffect(() => {
-    addSearchParamValues({
-      search,
-      role,
-    });
-  }, [search, role]);
-
-  React.useEffect(() => {
     console.log("accounts page :", accountsPage);
     console.log("params :", searchParams.toString());
   }, [accountsPage]);
+
+  setAccountActions({
+    setActive: (isActive) => {
+      console.log("is active :", isActive);
+    },
+  });
 
   return (
     <div className="page">
@@ -104,17 +101,21 @@ function ListAccounts() {
           <Input
             placeholder="email or name"
             className="w-72"
-            value={search}
+            value={(searchParamsRecord.search as string) ?? ""}
             onChange={({ target: { value } }) => {
-              setSearch(value);
+              addSearchParamValues({
+                search: value,
+              });
             }}
           />
         </form>
 
         <Select
-          value={role}
+          value={(searchParamsRecord.role as string) ?? ""}
           onValueChange={(value) => {
-            setRole(value);
+            addSearchParamValues({
+              role: value,
+            });
           }}
         >
           <SelectTrigger className="w-[180px]">

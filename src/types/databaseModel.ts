@@ -86,7 +86,6 @@ export type Account = Partial<AccountProfile> & {
 export type DemandStatus =
   | "PENDING_TRANSFUSION"
   | "PENDING_CONSULTATION"
-  | "PENDING_RESULTS"
   | "AWAITING_TRANSFUSION"
   | "AWAITING_CONSULTATION"
   | "REJECTED"
@@ -101,4 +100,56 @@ export type DemandResp = {
   reason: string;
   readIt: boolean;
   status: DemandStatus;
+};
+
+export type DonationStatus =
+  | "AWAITING_CONSULTATION"
+  | "AWAITING_EXTRACTION"
+  | "PENDING_CONSULTATION"
+  | "PENDING_EXTRACTION"
+  | "REJECTED"
+  | "ACCEPTED";
+
+export type DonationResp = {
+  id: number;
+  donorId: number;
+  quantity: number;
+  bloodGroup: BloodGroup;
+  status: DonationStatus;
+  date: string;
+  donor: AccountProfile;
+};
+
+export type AppointmentReason =
+  | "CONSULTATION"
+  | "TRANSFUSION"
+  | "BLOOD_EXTRACTION";
+
+export type AppointmentStatus =
+  | "AWAITING_VALIDATION"
+  | "TERMINATED"
+  | "REJECTED"
+  | "CANCELED";
+
+export type AppointmentResp = {
+  id: number;
+  patientId: number;
+  doctorId: number;
+  date: string;
+  reason: AppointmentReason;
+  status: AppointmentStatus;
+  donationId?: number;
+  demandId?: number;
+  validated: boolean;
+  patientData: AccountProfile;
+  doctorData: AccountProfile;
+  donationData?: {
+    id: number;
+    donorId: number;
+    quantity: 8;
+    bloodGroup: BloodGroup;
+    status: DonationStatus;
+    date: string;
+  };
+  demandData?: null;
 };
