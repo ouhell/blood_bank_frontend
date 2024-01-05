@@ -4,9 +4,11 @@ import {
   Account,
   AccountProfile,
   AppointmentResp,
+  AppointmentSuggestion,
   DemandResp,
   DonationResp,
   Hospital,
+  ModifyAccountData,
   Page,
 } from "@/types/databaseModel";
 import { useMutation } from "@tanstack/react-query";
@@ -48,6 +50,22 @@ export const getPagedDonations = (config?: AxiosRequestConfig) => {
   });
 };
 
+export const modifyAccountProfile = (
+  data: ModifyAccountData,
+  config?: AxiosRequestConfig
+) => {
+  return axios<AccountProfile>({
+    ...config,
+    url: `${mainServer}/api/admin/accounts/${data.id}`,
+    method: "put",
+    data: data,
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+      ...config?.headers,
+    },
+  });
+};
+
 export const getPagedAppointments = (config?: AxiosRequestConfig) => {
   return axios<Page<AppointmentResp>>({
     ...config,
@@ -71,9 +89,30 @@ export const getAllHospitals = (config?: AxiosRequestConfig) => {
     },
   });
 };
+type SuggestionRequest = {
+  type: string;
+  id?: number;
+};
+export const getAppointmentSuggestion = (
+  req: SuggestionRequest,
+  config?: AxiosRequestConfig
+) => {
+  console.log("suggestion request", req);
+  return axios<AppointmentSuggestion>({
+    ...config,
+    url: `${mainServer}/api/admin/appointments/suggestion`,
+    method: "get",
+    params: req,
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+
+      ...config?.headers,
+    },
+  });
+};
 
 export const postDoctor = (config?: AxiosRequestConfig) => {
-  return axios({
+  return axios<AccountProfile>({
     method: "post",
     ...config,
     headers: {
@@ -81,5 +120,20 @@ export const postDoctor = (config?: AxiosRequestConfig) => {
       ...config?.headers,
     },
     url: `${mainServer}/api/admin/accounts/doctor`,
+  });
+};
+
+export const putCancelAppointment = (
+  appointmentId: number,
+  config?: AxiosRequestConfig
+) => {
+  return axios<AppointmentResp>({
+    ...config,
+    url: `${mainServer}/api/admin/appointments/${appointmentId}/cancel`,
+    method: "put",
+    headers: {
+      Authorization: "Bearer " + apiCenter.accessToken,
+      ...config?.headers,
+    },
   });
 };

@@ -16,8 +16,26 @@ import { parseStatus } from "@/utils/typeConverting";
 import { isAwaiting } from "@/utils/stateUtils";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { DrawerTrigger } from "@/components/ui/drawer";
 
 type ColumnType = DemandResp;
+
+type DemandsActions = {
+  onReject: (data: ColumnType) => void;
+  onAssignAppointment: (data: ColumnType) => void;
+};
+
+const actions: DemandsActions = {
+  onReject: () => {},
+  onAssignAppointment: () => {},
+};
+
+export const setDemandsActions = (newActions: Partial<DemandsActions>) => {
+  const keys = Object.keys(newActions) as (keyof DemandsActions)[];
+  for (const key of keys) {
+    actions[key] = newActions[key] ?? actions[key];
+  }
+};
 
 export const columns: ColumnDef<ColumnType>[] = [
   // {
@@ -78,6 +96,8 @@ export const columns: ColumnDef<ColumnType>[] = [
     cell: ({ row }) => {
       const Id = row.original.id;
       const isAwaitingAppointment = isAwaiting(row.original.status);
+      const isDone =
+        row.original.status === "SERVED" || row.original.status === "REJECTED";
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -94,13 +114,29 @@ export const columns: ColumnDef<ColumnType>[] = [
               Copy ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+
             {isAwaitingAppointment && (
-              <DropdownMenuItem className="text-green-500 hover:bg-green-500 hover:text-white">
-                <div>Assign Appointment</div>
+              <DropdownMenuItem
+                className="text-green-500 hover:bg-green-500 hover:text-white"
+                onClick={() => {
+                  actions.onAssignAppointment(row.original);
+                }}
+              >
+                <DrawerTrigger asChild>
+                  <div>Assign Appointment</div>
+                </DrawerTrigger>
               </DropdownMenuItem>
             )}
-
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            {!isDone && (
+              <DropdownMenuItem
+                className="text-red-500 hover:bg-red-500 hover:text-white"
+                onClick={() => {
+                  actions.onReject(row.original);
+                }}
+              >
+                <div>Reject</div>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

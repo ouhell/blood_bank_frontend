@@ -18,11 +18,11 @@ import { parseBloodGroup } from "@/utils/typeConverting";
 type ColumnType = AccountProfile;
 
 type AccountActions = {
-  setActive: (isActive: boolean) => void;
+  onActiveSwitch: (account: AccountProfile) => void;
 };
 
 const actions: AccountActions = {
-  setActive: () => {},
+  onActiveSwitch: () => {},
 };
 
 export const setAccountActions = (newActions: Partial<AccountActions>) => {
@@ -67,7 +67,7 @@ export const columns: ColumnDef<ColumnType>[] = [
     },
   },
   {
-    accessorKey: "isEnabled",
+    accessorKey: "isAccountNonLocked",
     header: "Enabled",
   },
   {
@@ -75,7 +75,7 @@ export const columns: ColumnDef<ColumnType>[] = [
     header: "app_loader",
     cell: ({ row }) => {
       const userId = row.original.id;
-      const isEnabled = row.original.isEnabled;
+      const isEnabled = row.original.isAccountNonLocked;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -95,14 +95,14 @@ export const columns: ColumnDef<ColumnType>[] = [
             {isEnabled ? (
               <DropdownMenuItem
                 className="text-red-500"
-                onClick={() => actions.setActive(false)}
+                onClick={() => actions.onActiveSwitch(row.original)}
               >
                 Disable
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
                 className="text-green-500"
-                onClick={() => actions.setActive(true)}
+                onClick={() => actions.onActiveSwitch(row.original)}
               >
                 Enable
               </DropdownMenuItem>

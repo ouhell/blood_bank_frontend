@@ -2,8 +2,9 @@ import React from "react";
 
 import { useSearchParams } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  putCancelAppointment,
   getPagedAppointments,
   getPagedDemands,
   getPagedDonations,
@@ -11,7 +12,7 @@ import {
 
 import { parse as parseStringToObject } from "qs";
 import { DataTable } from "@/components/DataTable";
-import { columns } from "./AppointmentColumns";
+import { columns, setAppointmentsActions } from "./AppointmentColumns";
 
 import NumberedPagination from "@/components/NumberedPagination";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 function ListAppointments() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +35,8 @@ function ListAppointments() {
   const searchParamsRecord = React.useMemo(() => {
     return parseStringToObject(serializedSearchParams);
   }, [serializedSearchParams]);
+
+  const queryClient = useQueryClient();
   const { data: donationsPage, isFetching: isAppointmentsFetching } = useQuery({
     queryKey: ["admin", "appointments", serializedSearchParams],
 
@@ -41,6 +46,12 @@ function ListAppointments() {
       });
     },
     select: (res) => res.data,
+  });
+
+  const { data, mutateAsync: cancelAppointment } = useMutation({
+    mutationFn: async (appointmentId: number) => {
+      return putCancelAppointment(appointmentId).then((res) => res.data);
+    },
   });
 
   const currentPage = searchParams.get("page")
@@ -54,7 +65,7 @@ function ListAppointments() {
     });
     for (const key in set) {
       newUrlSearchParams.delete(key);
-      newUrlSearchParams.set(key, set[key]);
+      if (set[key]?.trim()) newUrlSearchParams.set(key, set[key]);
     }
 
     setSearchParams(newUrlSearchParams);
@@ -71,6 +82,23 @@ function ListAppointments() {
     console.log("params :", searchParams.toString());
   }, [donationsPage]);
 
+  setAppointmentsActions({
+    onCancel: async (appointment) => {
+      const res = await cancelAppointment(appointment.id).catch(
+        (e: AxiosError) => e
+      );
+      if (res instanceof AxiosError) {
+        toast.error("error on canceling appointment");
+        console.log("error", res);
+      } else {
+        toast.success("Canceled Appointment");
+        queryClient.invalidateQueries({
+          queryKey: ["admin", "appointments"],
+        });
+      }
+    },
+  });
+
   return (
     <div className="page">
       <h3 className="text-2xl">Appointments </h3>
@@ -82,7 +110,7 @@ function ListAppointments() {
           }}
         >
           <Input
-            placeholder="receiver email or name"
+            placeholder="doctor email or name"
             className="w-72"
             value={(searchParamsRecord.search as string) ?? ""}
             onChange={({ target: { value } }) => {
@@ -103,20 +131,12 @@ function ListAppointments() {
           <SelectContent>
             <SelectGroup>
               <SelectItem value=" ">Any</SelectItem>
-              <SelectItem value="AWAITING_CONSULTATION">
-                Awaiting Consultation
+              <SelectItem value="AWAITING_VALIDATION">
+                Awaiting Validation
               </SelectItem>
-              <SelectItem value="AWAITING_TRANSFUSION">
-                Awaiting Transfusion
-              </SelectItem>
-              <SelectItem value="PENDING_CONSULTATION">
-                Pending Consultation
-              </SelectItem>
-              <SelectItem value="PENDING_TRANSFUSION">
-                Pending Transfusion
-              </SelectItem>
-              <SelectItem value="SERVED">Served</SelectItem>
+              <SelectItem value="TERMINATED">Terminated</SelectItem>
               <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="CANCELED">Canceled</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

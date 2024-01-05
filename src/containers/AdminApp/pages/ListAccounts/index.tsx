@@ -2,8 +2,8 @@ import React from "react";
 
 import { useSearchParams } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
-import { getPagedAccounts } from "@/api/apiCalls/admin";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getPagedAccounts, modifyAccountProfile } from "@/api/apiCalls/admin";
 
 import { parse as parseStringToObject } from "qs";
 
@@ -21,8 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useApiCenter } from "@/api/apiCenter";
+import { AccountProfile, ModifyAccountData } from "@/types/databaseModel";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 function ListAccounts() {
+  const [apiCenter, setApiCenter] = useApiCenter();
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const serializedSearchParams = React.useMemo<string>(() => {
     return searchParams.toString();
@@ -49,8 +55,16 @@ function ListAccounts() {
     placeholderData: (previousData, previousQuery) => previousData,
   });
 
+  const { mutateAsync: modifyAccount, data } = useMutation<
+    AccountProfile,
+    AxiosError,
+    ModifyAccountData
+  >({
+    mutationFn: (data) => modifyAccountProfile(data).then((res) => res.data),
+  });
+
   const currentPage = searchParams.get("page")
-    ? Number.parseInt(searchParams.get("page") as string)
+    ? Number.parseInt(searchParams.get("page") as string) ?? 1
     : 1;
 
   const addSearchParamValues = (set: Record<string, string>) => {
@@ -82,9 +96,29 @@ function ListAccounts() {
     console.log("params :", searchParams.toString());
   }, [accountsPage]);
 
+  React.useEffect(() => {
+    console.log("api center", apiCenter);
+  }, [apiCenter]);
+
   setAccountActions({
-    setActive: (isActive) => {
-      console.log("is active :", isActive);
+    onActiveSwitch: async (account) => {
+      console.log(account);
+      const data: ModifyAccountData = {
+        id: account.id,
+        isAccountNonLocked: !account.isAccountNonLocked,
+      };
+      console.log("data", data);
+      const result = await modifyAccount(data).catch((e: AxiosError) => e);
+
+      if (result instanceof AxiosError) {
+        console.log("error ", result);
+        toast.error("failed to update");
+      } else {
+        toast.success("updated account");
+        queryClient.invalidateQueries({
+          queryKey: ["admin", "accounts"],
+        });
+      }
     },
   });
 

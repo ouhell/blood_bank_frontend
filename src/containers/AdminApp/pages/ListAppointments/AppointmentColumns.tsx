@@ -24,6 +24,23 @@ import { cn } from "@/lib/utils";
 
 type ColumnType = AppointmentResp;
 
+type AppointmentsActions = {
+  onCancel: (appointment: ColumnType) => void;
+};
+
+const actions: AppointmentsActions = {
+  onCancel: () => {},
+};
+
+export const setAppointmentsActions = (
+  newActions: Partial<AppointmentsActions>
+) => {
+  const keys = Object.keys(newActions) as (keyof AppointmentsActions)[];
+  for (const key of keys) {
+    actions[key] = newActions[key] ?? actions[key];
+  }
+};
+
 export const columns: ColumnDef<ColumnType>[] = [
   // {
   //   accessorKey: "fullName",
@@ -86,7 +103,13 @@ export const columns: ColumnDef<ColumnType>[] = [
 
     cell: ({ row }) => {
       const Id = row.original.id;
+      const doctorId = row.original.doctorId;
+      const donationId = row.original.donationId;
+      const demandId = row.original.demandId;
       const isAwaitingAppointment = !row.original.validated;
+      const isRejected =
+        row.original.status === "REJECTED" ||
+        row.original.status === "CANCELED";
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -102,9 +125,31 @@ export const columns: ColumnDef<ColumnType>[] = [
             >
               Copy ID
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(doctorId + "")}
+            >
+              Copy doctor ID
+            </DropdownMenuItem>
+            {demandId && (
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(demandId + "")}
+              >
+                Copy demand ID
+              </DropdownMenuItem>
+            )}
+            {donationId && (
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(donationId + "")}
+              >
+                Copy donation ID
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             {isAwaitingAppointment && (
-              <DropdownMenuItem className="text-red-500 hover:bg-red-500 hover:text-white">
+              <DropdownMenuItem
+                className="text-red-500 hover:bg-red-500 hover:text-white"
+                onClick={() => actions.onCancel(row.original)}
+              >
                 <div>Cancel</div>
               </DropdownMenuItem>
             )}

@@ -74,7 +74,7 @@ export type AccountProfile = {
   hospitalId?: number;
   hospital?: Hospital;
   profilePicUrl: string;
-  isNonLocked: boolean;
+  isAccountNonLocked: boolean;
   isEnabled: boolean;
 };
 
@@ -86,6 +86,7 @@ export type Account = Partial<AccountProfile> & {
 export type DemandStatus =
   | "PENDING_TRANSFUSION"
   | "PENDING_CONSULTATION"
+  | "ALLOCATING"
   | "AWAITING_TRANSFUSION"
   | "AWAITING_CONSULTATION"
   | "REJECTED"
@@ -152,4 +153,29 @@ export type AppointmentResp = {
     date: string;
   };
   demandData?: null;
+};
+
+export type AssignAppointmentRequest = {
+  doctorId?: number;
+  donationId?: number;
+  demandId?: number; //  it can be either donationId or demandId not both but at least one
+  date?: number;
+};
+
+export type ModifyAccountData = {
+  id: number;
+  fullName?: string;
+  email?: string;
+  phoneNumber?: string;
+  districtId?: number;
+  hospitalId?: number;
+  bloodGroup?: BloodGroup;
+  newPassword?: string;
+  currentPassword?: string;
+  isAccountNonLocked?: boolean;
+};
+
+export type AppointmentSuggestion = {
+  doctor: AccountProfile;
+  date: string;
 };
