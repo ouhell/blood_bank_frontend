@@ -42,8 +42,7 @@ type Props = {
 
 function AddAppointmentDrawer({ children, open, initials, title }: Props) {
   const [province, setProvince] = React.useState(initials?.province);
-  const [date, setDate] = React.useState("");
-  const [time, setTime] = React.useState("");
+
   const [request, setRequest] = React.useState<AssignAppointmentRequest>(
     initials ?? {}
   );
@@ -107,6 +106,28 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
     select: (data) => data.data,
     placeholderData: (data) => data,
   });
+
+  const { date, time } = React.useMemo(() => {
+    const currentDate = request.date ? new Date(request.date) : undefined;
+
+    const newDate = currentDate
+      ? `${(currentDate.getFullYear() + "").padStart(4, "0")}-${(
+          currentDate.getMonth() +
+          1 +
+          ""
+        ).padStart(2, "0")}-${(currentDate.getDate() + "").padStart(2, "0")}`
+      : "";
+
+    const newTime = currentDate
+      ? `${(currentDate.getHours() + "").padStart(2, "0")}:${(
+          currentDate.getMinutes() + ""
+        ).padStart(2, "0")}`
+      : "";
+    return {
+      date: newDate,
+      time: newTime,
+    };
+  }, [request.date]);
 
   return (
     <Drawer open={open}>
@@ -203,7 +224,7 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
                 value={time}
                 onChange={(e) => {
                   const [hours, minutes] = e.target.value.split(":");
-                  setTime(e.target.value);
+
                   setRequest((old) => {
                     const oldDate = old.date ? new Date(old.date) : new Date();
 
@@ -220,8 +241,6 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
                 className="max-w-[15rem]"
                 value={date}
                 onChange={(e) => {
-                  setDate(e.target.value);
-
                   const newDate = new Date(e.target.value);
 
                   setRequest((old) => {
@@ -268,15 +287,13 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
                       ).padStart(2, "0")}-${(
                         suggestedDate.getDate() + ""
                       ).padStart(2, "0")}`;
-                      console.log("new date ", newDate);
+
                       const newTime = `${(
                         suggestedDate.getHours() + ""
                       ).padStart(2, "0")}:${(
                         suggestedDate.getMinutes() + ""
                       ).padStart(2, "0")}`;
 
-                      setDate(newDate);
-                      setTime(newTime);
                       setRequest((old) => {
                         return {
                           ...old,
