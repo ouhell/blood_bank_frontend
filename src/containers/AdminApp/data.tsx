@@ -39,12 +39,12 @@ const managementRoutes: RouteConfig[] = [
     routes: [
       {
         name: "Add Doctor",
-        path: "/management/accounts/add",
+        path: "/accounts/add",
         element: <AddAccount />,
       },
       {
         name: "List Accounts",
-        path: "/management/accounts",
+        path: "/accounts",
         element: <ListAccounts />,
       },
     ],
@@ -55,13 +55,8 @@ const managementRoutes: RouteConfig[] = [
     name: "Demands",
     routes: [
       {
-        name: "Arrange Appointments",
-        path: "/management/demands/add",
-        element: null,
-      },
-      {
         name: "List Demands",
-        path: "/management/demands",
+        path: "/demands",
         element: <ListDemands />,
       },
     ],
@@ -72,13 +67,8 @@ const managementRoutes: RouteConfig[] = [
     name: "Donations",
     routes: [
       {
-        name: "Arrange Appointments",
-        path: "/management/donations/add",
-        element: null,
-      },
-      {
         name: "List Donations",
-        path: "/management/donations",
+        path: "/donations",
         element: <ListDonations />,
       },
     ],
@@ -90,7 +80,7 @@ const managementRoutes: RouteConfig[] = [
     routes: [
       {
         name: "List Appointments",
-        path: "/management/appointments",
+        path: "/appointments",
         element: <ListAppointments />,
       },
     ],
@@ -102,12 +92,12 @@ const managementRoutes: RouteConfig[] = [
     routes: [
       {
         name: "Add Hospital",
-        path: "/management/hospitals/add",
+        path: "/hospitals/add",
         element: null,
       },
       {
         name: "List Hospitals",
-        path: "/management/hospitals",
+        path: "/hospitals",
         element: null,
       },
     ],
@@ -117,8 +107,8 @@ const managementRoutes: RouteConfig[] = [
 
 export const routeDomains: RouteDomain[] = [
   {
-    domainPath: "/management",
-    domainName: "Management",
+    domainPath: "",
+    domainName: "",
     routeConfigs: managementRoutes,
   },
 ];

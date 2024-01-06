@@ -10,7 +10,7 @@ export type ParsedBloodGroup =
   | "O+"
   | "O-";
 
-const bloodGroupParseMap = new Map<BloodGroup, ParsedBloodGroup>([
+export const bloodGroupParseMap = new Map<BloodGroup, ParsedBloodGroup>([
   ["AB_PLUS", "AB+"],
   ["AB_MINUS", "AB-"],
   ["A_PLUS", "A+"],
@@ -21,7 +21,7 @@ const bloodGroupParseMap = new Map<BloodGroup, ParsedBloodGroup>([
   ["O_MINUS", "O-"],
 ]);
 
-const bloodGroupUnparseMap = new Map<ParsedBloodGroup, BloodGroup>([
+export const bloodGroupUnparseMap = new Map<ParsedBloodGroup, BloodGroup>([
   ["AB+", "AB_PLUS"],
   ["AB-", "AB_MINUS"],
   ["A+", "A_PLUS"],

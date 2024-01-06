@@ -74,11 +74,6 @@ const AddAccount = () => {
       }).then((res) => res.data),
   });
 
-  React.useEffect(() => {
-    console.log("provinces", provinces);
-    console.log("hospitals", hospitals);
-  }, [provinces, hospitals]);
-
   const addSearchParamValues = (set: Record<string, string>) => {
     const newUrlSearchParams = new URLSearchParams();
     searchParams.forEach((key, val) => {
@@ -131,7 +126,6 @@ const AddAccount = () => {
               },
             });
           }
-          console.log("added doc :", result);
         }}
         className=" flex h-full justify-center items-start pt-8"
       >

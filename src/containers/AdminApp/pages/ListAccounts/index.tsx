@@ -91,23 +91,13 @@ function ListAccounts() {
     });
   };
 
-  React.useEffect(() => {
-    console.log("accounts page :", accountsPage);
-    console.log("params :", searchParams.toString());
-  }, [accountsPage]);
-
-  React.useEffect(() => {
-    console.log("api center", apiCenter);
-  }, [apiCenter]);
-
   setAccountActions({
     onActiveSwitch: async (account) => {
-      console.log(account);
       const data: ModifyAccountData = {
         id: account.id,
         isAccountNonLocked: !account.isAccountNonLocked,
       };
-      console.log("data", data);
+
       const result = await modifyAccount(data).catch((e: AxiosError) => e);
 
       if (result instanceof AxiosError) {

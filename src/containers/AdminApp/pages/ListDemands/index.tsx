@@ -2,8 +2,12 @@ import React, { useState } from "react";
 
 import { useSearchParams } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
-import { getPagedAccounts, getPagedDemands } from "@/api/apiCalls/admin";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getPagedAccounts,
+  getPagedDemands,
+  putRejectDemand,
+} from "@/api/apiCalls/admin";
 
 import { parse as parseStringToObject } from "qs";
 import { DataTable } from "@/components/DataTable";
@@ -24,8 +28,11 @@ import AddAppointmentDrawer, {
 } from "../../components/AddAppointmentDrawer";
 import { DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 function ListDemands() {
+  const queryClient = useQueryClient();
   const [initials, setInitials] = useState<DrawerInitials>();
   const [searchParams, setSearchParams] = useSearchParams();
   const serializedSearchParams = React.useMemo<string>(() => {
@@ -43,6 +50,15 @@ function ListDemands() {
       });
     },
     select: (res) => res.data,
+  });
+
+  const { mutateAsync: rejectDemand } = useMutation({
+    mutationFn: (demandId: number) => {
+      return putRejectDemand(demandId).then((res) => res.data);
+    },
+    onError: (e: AxiosError) => {
+      console.log("rejectDemandError :", e);
+    },
   });
 
   const currentPage = searchParams.get("page")
@@ -68,17 +84,27 @@ function ListDemands() {
     });
   };
 
-  React.useEffect(() => {
-    console.log("demands page :", demandsPage);
-    console.log("params :", searchParams.toString());
-  }, [demandsPage]);
-
   setDemandsActions({
     onAssignAppointment(data) {
       setInitials({
         demandId: data.id,
         province: data.receiver.district?.provinceId,
       });
+    },
+    onReject: async (demand) => {
+      const result = await rejectDemand(demand.id).catch((e: AxiosError) => e);
+      if (result instanceof AxiosError) {
+        toast.error("Couldn't Reject Demand");
+      } else {
+        toast.success("Demand Successfully Rejected");
+        queryClient.invalidateQueries({
+          queryKey: ["admin", "demands"],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["admin", "appointments"],
+        });
+      }
     },
   });
 

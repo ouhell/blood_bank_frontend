@@ -26,15 +26,15 @@ type ColumnType = DonationResp;
 
 type DonationsActions = {
   onReject: (data: ColumnType) => void;
-  onAssignAppointment: (data: ColumnType) => void;
 };
 
 const actions: DonationsActions = {
   onReject: () => {},
-  onAssignAppointment: () => {},
 };
 
-export const setDonationsActions = (newActions: Partial<DonationsActions>) => {
+export const setDonorDonationsActions = (
+  newActions: Partial<DonationsActions>
+) => {
   const keys = Object.keys(newActions) as (keyof DonationsActions)[];
   for (const key of keys) {
     actions[key] = newActions[key] ?? actions[key];
@@ -50,21 +50,21 @@ export const columns: ColumnDef<ColumnType>[] = [
   //   accessorKey: "email",
   //   header: "Email",
   // },
-  {
-    accessorKey: "donor",
-    header: "Donor",
-    cell({ row }) {
-      const donorId = row.original.donorId;
-      return (
-        <NavLink
-          to={`/management/accounts/profile/${donorId}`}
-          className="capitalize hover:underline cursor-pointer"
-        >
-          {parseStatus(row.original.donor.fullName)}
-        </NavLink>
-      );
-    },
-  },
+  //   {
+  //     accessorKey: "donor",
+  //     header: "Donor",
+  //     cell({ row }) {
+  //       const donorId = row.original.;
+  //       return (
+  //         <NavLink
+  //           to={`/management/accounts/profile/${donorId}`}
+  //           className="capitalize hover:underline cursor-pointer"
+  //         >
+  //           {parseStatus(row.original.donor.fullName)}
+  //         </NavLink>
+  //       );
+  //     },
+  //   },
   {
     accessorKey: "quantity",
     header: "Quantity",
@@ -119,19 +119,6 @@ export const columns: ColumnDef<ColumnType>[] = [
             >
               Copy ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {isAwaitingAppointment && (
-              <DropdownMenuItem
-                className="text-green-500 hover:bg-green-500 hover:text-white"
-                onClick={() => {
-                  actions.onAssignAppointment(row.original);
-                }}
-              >
-                <DrawerTrigger>
-                  <div>Assign Appointment</div>
-                </DrawerTrigger>
-              </DropdownMenuItem>
-            )}
 
             {!isDone && (
               <DropdownMenuItem

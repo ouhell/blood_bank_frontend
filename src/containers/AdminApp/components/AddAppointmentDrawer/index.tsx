@@ -13,7 +13,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { AssignAppointmentRequest } from "@/types/databaseModel";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAllProvinces } from "@/api/apiCalls/user";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,8 +28,10 @@ import { parse } from "qs";
 import {
   getAppointmentSuggestion,
   getPagedAccounts,
+  postAppointment,
 } from "@/api/apiCalls/admin";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export type DrawerInitials = AssignAppointmentRequest & { province?: number };
 
@@ -60,7 +62,7 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
     select: (data) => data.data.sort((a, b) => a.number - b.number),
     placeholderData: (data) => data,
   });
-
+  const queryClient = useQueryClient();
   const { data: suggestion, refetch: fetchSuggestion } = useQuery({
     queryKey: [
       "admin",
@@ -82,6 +84,12 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
 
     // placeholderData: (data) => data,
     enabled: false,
+  });
+
+  const { mutateAsync: arrangeAssignment } = useMutation({
+    mutationFn: (request: AssignAppointmentRequest) => {
+      return postAppointment(request).then((res) => res.data);
+    },
   });
 
   const searchParams = React.useMemo(() => {
@@ -146,7 +154,48 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
 
           <div className=" flex flex-col gap-4 md:px-20 ">
             <div className=" flex flex-col md:flex-row items-center justify-center gap-4 relative">
-              <Button variant="secondary" className="">
+              <Button
+                variant="secondary"
+                className=""
+                onClick={async () => {
+                  const res = await fetchSuggestion();
+                  if (res.isError) {
+                    console.log("suggestioon error", res.error);
+                    toast.error("Failed to load Suggestion");
+                  } else {
+                    const suggestion = res.data;
+                    toast.success("Suggestion Loaded");
+                    if (suggestion) {
+                      const suggestedDate = new Date(suggestion.date);
+                      setProvince(suggestion.doctor.district?.provinceId);
+
+                      const newDate = `${(
+                        suggestedDate.getFullYear() + ""
+                      ).padStart(4, "0")}-${(
+                        suggestedDate.getMonth() +
+                        1 +
+                        ""
+                      ).padStart(2, "0")}-${(
+                        suggestedDate.getDate() + ""
+                      ).padStart(2, "0")}`;
+
+                      const newTime = `${(
+                        suggestedDate.getHours() + ""
+                      ).padStart(2, "0")}:${(
+                        suggestedDate.getMinutes() + ""
+                      ).padStart(2, "0")}`;
+
+                      setRequest((old) => {
+                        return {
+                          ...old,
+                          date: suggestedDate.getTime(),
+                          doctorId: suggestion.doctor.id,
+                        };
+                      });
+                    }
+                  }
+                }}
+              >
                 get Suggestion
               </Button>
               <Input
@@ -182,7 +231,7 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
                         value={province.id + ""}
                         key={province.id}
                       >
-                        {province.number}. {province.name} . {province.id}
+                        {province.number}. {province.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -265,43 +314,31 @@ function AddAppointmentDrawer({ children, open, initials, title }: Props) {
           <DrawerFooter className="px-32 ">
             <div className="flex justify-center gap-4 md:flex-col md:px-40">
               <Button
+                disabled={
+                  !request.date ||
+                  !request.doctorId ||
+                  (!request.demandId && !request.donationId)
+                }
                 onClick={async () => {
-                  const res = await fetchSuggestion();
-                  if (res.isError) {
-                    console.log("suggestioon error", res.error);
-                    toast.error("Failed to load Suggestion");
+                  console.log("request :", request);
+                  const result = await arrangeAssignment(request).catch(
+                    (e: AxiosError) => e
+                  );
+                  if (result instanceof AxiosError) {
+                    toast.error("Failed to arrange appointment");
+                    console.log("appointment error :", result);
                   } else {
-                    const suggestion = res.data;
-                    console.log("suggestion ", suggestion);
-                    toast.success("Suggestion Loaded");
-                    if (suggestion) {
-                      const suggestedDate = new Date(suggestion.date);
-                      setProvince(suggestion.doctor.district?.provinceId);
-
-                      const newDate = `${(
-                        suggestedDate.getFullYear() + ""
-                      ).padStart(4, "0")}-${(
-                        suggestedDate.getMonth() +
-                        1 +
-                        ""
-                      ).padStart(2, "0")}-${(
-                        suggestedDate.getDate() + ""
-                      ).padStart(2, "0")}`;
-
-                      const newTime = `${(
-                        suggestedDate.getHours() + ""
-                      ).padStart(2, "0")}:${(
-                        suggestedDate.getMinutes() + ""
-                      ).padStart(2, "0")}`;
-
-                      setRequest((old) => {
-                        return {
-                          ...old,
-                          date: suggestedDate.getTime(),
-                          doctorId: suggestion.doctor.id,
-                        };
-                      });
-                    }
+                    toast.success("Appointment Successfully Arranged");
+                    queryClient.invalidateQueries({
+                      queryKey: ["admin", "appointments"],
+                    });
+                    queryClient.invalidateQueries({
+                      queryKey: ["admin", "donations"],
+                    });
+                    queryClient.invalidateQueries({
+                      queryKey: ["admin", "demands"],
+                    });
+                    setRequest({});
                   }
                 }}
               >

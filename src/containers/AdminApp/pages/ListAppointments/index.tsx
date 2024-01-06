@@ -77,11 +77,6 @@ function ListAppointments() {
     });
   };
 
-  React.useEffect(() => {
-    console.log("donations page :", donationsPage);
-    console.log("params :", searchParams.toString());
-  }, [donationsPage]);
-
   setAppointmentsActions({
     onCancel: async (appointment) => {
       const res = await cancelAppointment(appointment.id).catch(

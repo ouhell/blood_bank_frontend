@@ -51,8 +51,8 @@ export const columns: ColumnDef<ColumnType>[] = [
   //   header: "Email",
   // },
   {
-    accessorKey: "donor",
-    header: "Donor",
+    accessorKey: "doctor",
+    header: "Doctor",
     cell({ row }) {
       const doctorId = row.original.doctorData.id;
       return (

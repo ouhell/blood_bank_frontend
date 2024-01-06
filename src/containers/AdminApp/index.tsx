@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import { RouteData, routeDomains } from "./data";
 import { Route, Routes } from "react-router-dom";
 import "./admin.css";
+import Profile from "./pages/Profile";
 const allRoutes = routeDomains.reduce<RouteData[]>((prev, curr) => {
   const routes: RouteData[] = curr.routeConfigs.reduce<RouteData[]>(
     (previous, current) => {
@@ -26,7 +27,7 @@ const AdminApp = () => {
           <main className="w-full flex-1  overflow-auto pt-14 ">
             <Routes>
               {allRoutes.map((route) => {
-                console.log("route path  :", route.path);
+                // console.log("route path  :", route.path);
                 return (
                   <Route
                     key={route.path}
@@ -35,6 +36,10 @@ const AdminApp = () => {
                   />
                 );
               })}
+              <Route
+                path="/management/accounts/profile/:userId"
+                element={<Profile />}
+              />
             </Routes>
           </main>
         </div>

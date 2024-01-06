@@ -22,20 +22,20 @@ import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { DrawerTrigger } from "@/components/ui/drawer";
 
-type ColumnType = DonationResp;
+type ColumnType = DemandResp;
 
-type DonationsActions = {
+type DemandsActions = {
   onReject: (data: ColumnType) => void;
-  onAssignAppointment: (data: ColumnType) => void;
 };
 
-const actions: DonationsActions = {
+const actions: DemandsActions = {
   onReject: () => {},
-  onAssignAppointment: () => {},
 };
 
-export const setDonationsActions = (newActions: Partial<DonationsActions>) => {
-  const keys = Object.keys(newActions) as (keyof DonationsActions)[];
+export const setReceiverDemandsActions = (
+  newActions: Partial<DemandsActions>
+) => {
+  const keys = Object.keys(newActions) as (keyof DemandsActions)[];
   for (const key of keys) {
     actions[key] = newActions[key] ?? actions[key];
   }
@@ -50,21 +50,21 @@ export const columns: ColumnDef<ColumnType>[] = [
   //   accessorKey: "email",
   //   header: "Email",
   // },
-  {
-    accessorKey: "donor",
-    header: "Donor",
-    cell({ row }) {
-      const donorId = row.original.donorId;
-      return (
-        <NavLink
-          to={`/management/accounts/profile/${donorId}`}
-          className="capitalize hover:underline cursor-pointer"
-        >
-          {parseStatus(row.original.donor.fullName)}
-        </NavLink>
-      );
-    },
-  },
+  //   {
+  //     accessorKey: "donor",
+  //     header: "Donor",
+  //     cell({ row }) {
+  //       const donorId = row.original.;
+  //       return (
+  //         <NavLink
+  //           to={`/management/accounts/profile/${donorId}`}
+  //           className="capitalize hover:underline cursor-pointer"
+  //         >
+  //           {parseStatus(row.original.donor.fullName)}
+  //         </NavLink>
+  //       );
+  //     },
+  //   },
   {
     accessorKey: "quantity",
     header: "Quantity",
@@ -78,7 +78,7 @@ export const columns: ColumnDef<ColumnType>[] = [
     header: "Status",
     cell({ row }) {
       const isAwaitingAppointment = isAwaiting(row.original.status);
-      const isDonated = row.original.status === "ACCEPTED";
+      const isDonated = row.original.status === "SERVED";
       const isRejected = row.original.status === "REJECTED";
       return (
         <div
@@ -102,8 +102,7 @@ export const columns: ColumnDef<ColumnType>[] = [
       const Id = row.original.id;
       const isAwaitingAppointment = isAwaiting(row.original.status);
       const isDone =
-        row.original.status === "ACCEPTED" ||
-        row.original.status === "REJECTED";
+        row.original.status === "SERVED" || row.original.status === "REJECTED";
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -119,19 +118,6 @@ export const columns: ColumnDef<ColumnType>[] = [
             >
               Copy ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {isAwaitingAppointment && (
-              <DropdownMenuItem
-                className="text-green-500 hover:bg-green-500 hover:text-white"
-                onClick={() => {
-                  actions.onAssignAppointment(row.original);
-                }}
-              >
-                <DrawerTrigger>
-                  <div>Assign Appointment</div>
-                </DrawerTrigger>
-              </DropdownMenuItem>
-            )}
 
             {!isDone && (
               <DropdownMenuItem

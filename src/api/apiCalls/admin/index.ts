@@ -5,6 +5,7 @@ import {
   AccountProfile,
   AppointmentResp,
   AppointmentSuggestion,
+  AssignAppointmentRequest,
   DemandResp,
   DonationResp,
   Hospital,
@@ -20,19 +21,20 @@ export const getPagedAccounts = (config?: AxiosRequestConfig) => {
     url: `${mainServer}/api/admin/accounts`,
     method: "get",
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });
 };
 
 export const getPagedDemands = (config?: AxiosRequestConfig) => {
+  console.log("getting demands with center", apiCenter);
   return axios<Page<DemandResp>>({
     ...config,
     url: `${mainServer}/api/admin/demands`,
     method: "get",
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });
@@ -44,7 +46,7 @@ export const getPagedDonations = (config?: AxiosRequestConfig) => {
     url: `${mainServer}/api/admin/donations`,
     method: "get",
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });
@@ -60,7 +62,7 @@ export const modifyAccountProfile = (
     method: "put",
     data: data,
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });
@@ -72,7 +74,7 @@ export const getPagedAppointments = (config?: AxiosRequestConfig) => {
     url: `${mainServer}/api/admin/appointments`,
     method: "get",
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });
@@ -84,7 +86,7 @@ export const getAllHospitals = (config?: AxiosRequestConfig) => {
     url: `${mainServer}/api/admin/hospitals`,
     method: "get",
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });
@@ -97,14 +99,13 @@ export const getAppointmentSuggestion = (
   req: SuggestionRequest,
   config?: AxiosRequestConfig
 ) => {
-  console.log("suggestion request", req);
   return axios<AppointmentSuggestion>({
     ...config,
     url: `${mainServer}/api/admin/appointments/suggestion`,
     method: "get",
     params: req,
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
 
       ...config?.headers,
     },
@@ -116,7 +117,7 @@ export const postDoctor = (config?: AxiosRequestConfig) => {
     method: "post",
     ...config,
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
     url: `${mainServer}/api/admin/accounts/doctor`,
@@ -132,7 +133,53 @@ export const putCancelAppointment = (
     url: `${mainServer}/api/admin/appointments/${appointmentId}/cancel`,
     method: "put",
     headers: {
-      Authorization: "Bearer " + apiCenter.accessToken,
+      Authorization: apiCenter.token,
+      ...config?.headers,
+    },
+  });
+};
+
+export const postAppointment = (
+  request: AssignAppointmentRequest,
+  config?: AxiosRequestConfig
+) => {
+  return axios<AppointmentResp>({
+    ...config,
+    url: `${mainServer}/api/admin/appointments`,
+    method: "post",
+    headers: {
+      Authorization: apiCenter.token,
+      ...config?.headers,
+    },
+    data: request,
+  });
+};
+
+export const putRejectDemand = (
+  demandId: number,
+  config?: AxiosRequestConfig
+) => {
+  return axios<DemandResp>({
+    ...config,
+    url: `${mainServer}/api/admin/demands/${demandId}/reject`,
+    method: "put",
+    headers: {
+      Authorization: apiCenter.token,
+      ...config?.headers,
+    },
+  });
+};
+
+export const putRejectDonation = (
+  donationId: number,
+  config?: AxiosRequestConfig
+) => {
+  return axios<DonationResp>({
+    ...config,
+    url: `${mainServer}/api/admin/donations/${donationId}/reject`,
+    method: "put",
+    headers: {
+      Authorization: apiCenter.token,
       ...config?.headers,
     },
   });

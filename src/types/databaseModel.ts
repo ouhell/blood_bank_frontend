@@ -78,9 +78,10 @@ export type AccountProfile = {
   isEnabled: boolean;
 };
 
-export type Account = Partial<AccountProfile> & {
+export type Account = Omit<Partial<AccountProfile>, "district"> & {
   password?: string;
   confirmPassword?: string;
+  district?: number;
 };
 
 export type DemandStatus =
