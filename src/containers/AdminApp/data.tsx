@@ -86,23 +86,23 @@ const managementRoutes: RouteConfig[] = [
     ],
     icon: Calendar,
   },
-  {
-    parentPath: "",
-    name: "Hospitals",
-    routes: [
-      {
-        name: "Add Hospital",
-        path: "/hospitals/add",
-        element: null,
-      },
-      {
-        name: "List Hospitals",
-        path: "/hospitals",
-        element: null,
-      },
-    ],
-    icon: Building2,
-  },
+  // {
+  //   parentPath: "",
+  //   name: "Hospitals",
+  //   routes: [
+  //     {
+  //       name: "Add Hospital",
+  //       path: "/hospitals/add",
+  //       element: null,
+  //     },
+  //     {
+  //       name: "List Hospitals",
+  //       path: "/hospitals",
+  //       element: null,
+  //     },
+  //   ],
+  //   icon: Building2,
+  // },
 ];
 
 export const routeDomains: RouteDomain[] = [
