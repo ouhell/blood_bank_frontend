@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { parseStatus } from "@/utils/typeConverting";
-import { isAwaiting } from "@/utils/stateUtils";
+import { isAwaiting, isPending } from "@/utils/stateUtils";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { DrawerTrigger } from "@/components/ui/drawer";
@@ -96,6 +96,7 @@ export const columns: ColumnDef<ColumnType>[] = [
     cell: ({ row }) => {
       const Id = row.original.id;
       const isAwaitingAppointment = isAwaiting(row.original.status);
+      const isPendingAppointment = isPending(row.original.status);
       const isDone =
         row.original.status === "SERVED" || row.original.status === "REJECTED";
       return (
@@ -125,6 +126,13 @@ export const columns: ColumnDef<ColumnType>[] = [
                 <DrawerTrigger asChild>
                   <div>Assign Appointment</div>
                 </DrawerTrigger>
+              </DropdownMenuItem>
+            )}
+            {isPendingAppointment && (
+              <DropdownMenuItem>
+                <NavLink to={`/appointments?demand=${Id}`}>
+                  got to appointment
+                </NavLink>
               </DropdownMenuItem>
             )}
             {!isDone && (

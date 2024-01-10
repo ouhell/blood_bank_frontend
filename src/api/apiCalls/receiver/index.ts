@@ -1,6 +1,11 @@
 import globalApiCenter from "@/api/apiCenter";
 import { mainServer } from "@/api/apiConfig";
-import { AppointmentResp, DemandResp, Page } from "@/types/databaseModel";
+import {
+  AccountProfile,
+  AppointmentResp,
+  DemandResp,
+  Page,
+} from "@/types/databaseModel";
 import axios, { AxiosRequestConfig } from "axios";
 
 export const fetchReceiverPagedDemands = (config?: AxiosRequestConfig) => {
@@ -59,6 +64,18 @@ export const postDemand = (quantity: number, config?: AxiosRequestConfig) => {
     },
     headers: {
       Authorization: globalApiCenter.token,
+    },
+  });
+};
+
+export const getPagedDonorAccounts = (config?: AxiosRequestConfig) => {
+  return axios<Page<AccountProfile>>({
+    ...config,
+    url: `${mainServer}/api/receiver/donors`,
+    method: "get",
+    headers: {
+      Authorization: globalApiCenter.token,
+      ...config?.headers,
     },
   });
 };

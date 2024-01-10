@@ -5,6 +5,7 @@ import React from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
+import LandingPage from "./pages/LandingPage";
 
 const Home = () => {
   return (
@@ -30,7 +31,8 @@ const Home = () => {
         <main className="overflow-auto">
           <Routes>
             <Route path="sign-up" element={<SignUp />} />
-            <Route path="login" element={<Login />} />
+            <Route path="/*" element={<Login />} />
+            {/* <Route path="/*" element={<LandingPage />} /> */}
           </Routes>
         </main>
       </div>

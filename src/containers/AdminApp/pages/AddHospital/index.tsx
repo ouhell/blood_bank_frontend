@@ -1,4 +1,8 @@
-import { getAllHospitals, postDoctor } from "@/api/apiCalls/admin";
+import {
+  getAllHospitals,
+  postDoctor,
+  postHospital,
+} from "@/api/apiCalls/admin";
 import { Input } from "@/components/ui/input";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { ChangeEvent } from "react";
@@ -14,27 +18,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Account, AccountProfile } from "@/types/databaseModel";
+import { Account, AccountProfile, Hospital } from "@/types/databaseModel";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 type FormData = {
-  fullName: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
-  hospitalId: string;
+  name: string;
+  hashmap: string;
+
+  districtId: string;
 };
 
-const AddAccount = () => {
+const AddHospital = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [formData, setFormData] = React.useState<FormData>({
-    fullName: "",
-    email: "",
-    password: "",
-    phoneNumber: "",
-    hospitalId: "",
+    name: "",
+    hashmap: "",
+    districtId: "",
   });
+  const [selectedProvince, setSelectedProvince] = React.useState("");
   const serializedSearchParams = React.useMemo<string>(() => {
     return searchParams.toString();
   }, [searchParams]);
@@ -52,40 +54,14 @@ const AddAccount = () => {
         return a.number - b.number;
       }),
   });
-  const { data: hospitals, isLoading: isLoadingHospitals } = useQuery({
-    queryKey: ["admin", "hospitals", serializedSearchParams],
-    queryFn: () => {
-      return getAllHospitals({
-        params: searchParamsRecord,
-      });
-    },
-    select: (res) => res.data,
-    enabled: !isLoadingProvinces,
-  });
 
-  const { data, mutateAsync: addTeacher } = useMutation<
-    AccountProfile,
+  const { data, mutateAsync: addHospital } = useMutation<
+    Hospital,
     AxiosError,
-    Account
+    Partial<Hospital>
   >({
-    mutationFn: (account) =>
-      postDoctor({
-        data: account,
-      }).then((res) => res.data),
+    mutationFn: (data) => postHospital(data).then((res) => res.data),
   });
-
-  const addSearchParamValues = (set: Record<string, string>) => {
-    const newUrlSearchParams = new URLSearchParams();
-    searchParams.forEach((key, val) => {
-      newUrlSearchParams.set(val, key);
-    });
-    for (const key in set) {
-      newUrlSearchParams.delete(key);
-      if (set[key]?.trim()) newUrlSearchParams.set(key, set[key]);
-    }
-
-    setSearchParams(newUrlSearchParams);
-  };
 
   const setFormValue = (value: string, name: keyof FormData) => {
     setFormData((old) => {
@@ -95,36 +71,31 @@ const AddAccount = () => {
     });
   };
 
-  const isFormValid =
-    formData.email.trim() &&
-    formData.fullName.trim() &&
-    formData.hospitalId &&
-    formData.password.trim();
+  const isFormValid = formData.districtId && formData.name;
   return (
     <div className="page">
-      <h3 className="text-2xl">Add Doctor </h3>
+      <h3 className="text-2xl">Add Hospital </h3>
 
       <div className="divider w-full h-[0.1rem] bg-muted mb-4 mt-2 font-semibold"></div>
       <form
         onSubmit={async (e) => {
           e.preventDefault();
           if (!isFormValid) return;
-          const result = await addTeacher({
-            fullName: formData.fullName.trim(),
-            email: formData.email.trim(),
-            password: formData.password.trim(),
-            hospitalId: Number.parseInt(formData.hospitalId),
+          const result = await addHospital({
+            name: formData.name,
+            districtId: Number.parseInt(formData.districtId),
+            mapHash: formData.hashmap,
           }).catch((err: AxiosError) => err);
           if (result instanceof AxiosError) {
             console.log("error : ", result);
-            toast.error("couldn't create doctor", {
+            toast.error("couldn't create hospital", {
               style: {
                 backgroundColor: "red",
               },
             });
           } else {
-            toast.success("Doctor has been created", {
-              description: result.fullName,
+            toast.success("hospital has been created", {
+              description: result.name,
               cancel: {
                 label: "remove",
               },
@@ -139,62 +110,49 @@ const AddAccount = () => {
         <div className="p-8 rounded-sm border w-[40rem]">
           <div className="flex justify-between p-2 gap-8">
             <Input
-              placeholder="email"
-              name="email"
-              value={formData.email}
-              onChange={(e) => setFormValue(e.target.value, "email")}
+              placeholder="name"
+              name="name"
+              value={formData.name}
+              onChange={(e) => setFormValue(e.target.value, "name")}
             />
             <Input
-              placeholder="full name"
-              name="fullName"
-              value={formData.fullName}
-              onChange={(e) => setFormValue(e.target.value, "fullName")}
-            />
-          </div>
-          <div className="flex justify-between p-2 gap-8">
-            <Input
-              placeholder="password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={(e) => setFormValue(e.target.value, "password")}
-            />
-            <Input
-              placeholder="phoneNumber"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={(e) => setFormValue(e.target.value, "phoneNumber")}
+              placeholder="hash map"
+              name="hashmap"
+              value={formData.hashmap}
+              onChange={(e) => setFormValue(e.target.value, "hashmap")}
             />
           </div>
 
-          <div className="w-full flex items-center gap-1">
+          {/* <div className="w-full flex items-center gap-1">
             <div className="w-full h-[0.1rem] bg-muted"></div>
             <div className="text-muted-foreground">Hospital</div>
             <div className="w-full h-[0.1rem]  bg-muted"></div>
-          </div>
+          </div> */}
           <div className="flex justify-between p-2 gap-8">
             <Select
-              disabled={isLoadingProvinces || isLoadingHospitals}
+              disabled={isLoadingProvinces || !selectedProvince}
               onValueChange={(value) => {
-                setFormValue(value, "hospitalId");
+                setFormValue(value, "districtId");
               }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a Hospital" />
+                <SelectValue placeholder="Select a district" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {hospitals?.map((hospital) => {
-                    return (
-                      <SelectItem
-                        value={hospital.id + ""}
-                        key={hospital.id}
-                        className="capitalize"
-                      >
-                        {hospital.name}
-                      </SelectItem>
-                    );
-                  })}
+                  {provinces
+                    ?.find((province) => province.id + "" == selectedProvince)
+                    ?.districts.map((district) => {
+                      return (
+                        <SelectItem
+                          value={district.id + ""}
+                          key={district.id}
+                          className="capitalize"
+                        >
+                          {district.name}
+                        </SelectItem>
+                      );
+                    })}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -202,17 +160,15 @@ const AddAccount = () => {
             <Select
               disabled={isLoadingProvinces}
               onValueChange={(value) => {
-                addSearchParamValues({
-                  province: value,
-                });
+                setSelectedProvince(value);
               }}
+              value={selectedProvince}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select a Province" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value=" ">Any</SelectItem>
                   {provinces?.map((province) => {
                     return (
                       <SelectItem
@@ -229,7 +185,7 @@ const AddAccount = () => {
             </Select>
           </div>
           <div className="flex items-center justify-center">
-            <Button type="submit" size={"sm"}>
+            <Button type="submit" size={"sm"} disabled={!isFormValid}>
               Submit
             </Button>
           </div>
@@ -239,4 +195,4 @@ const AddAccount = () => {
   );
 };
 
-export default AddAccount;
+export default AddHospital;

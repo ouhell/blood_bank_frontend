@@ -71,49 +71,9 @@ export const columns: ColumnDef<ColumnType>[] = [
     header: "Phone Number",
   },
   {
-    accessorKey: "isAccountNonLocked",
-    header: "Enabled",
-  },
-  {
-    id: "actions",
-    header: "app_loader",
+    header: "District",
     cell: ({ row }) => {
-      const userId = row.original.id;
-      const isEnabled = row.original.isAccountNonLocked;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(userId + "")}
-            >
-              Copy user ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {isEnabled ? (
-              <DropdownMenuItem
-                className="text-red-500"
-                onClick={() => actions.onActiveSwitch(row.original)}
-              >
-                Disable
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem
-                className="text-green-500"
-                onClick={() => actions.onActiveSwitch(row.original)}
-              >
-                Enable
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <div className="capitalize">{row.original.district?.name}</div>;
     },
   },
 ];

@@ -2,7 +2,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Droplet, Stethoscope } from "lucide-react";
 import React from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import ReceiverDemandsList from "./pages/DemandsList";
 import {
   DropdownMenu,
@@ -16,6 +16,8 @@ import {
 
 import "./receiver.css";
 import { useApiCenter } from "@/api/apiCenter";
+import DonorAccounts from "./pages/DonorList";
+import { Button } from "@/components/ui/button";
 
 const ReceiverApp = () => {
   const [apiCenter, setApiCenter] = useApiCenter();
@@ -28,7 +30,33 @@ const ReceiverApp = () => {
             <Droplet className="text-red-600 " />
             <h3 className="font-semibold text-xl ">LifeNectar</h3>
           </div>
-          <DropdownMenu>
+          <div className="flex gap-4">
+            <NavLink to="/" className=" hover:font-bold hover:underline">
+              Demands
+            </NavLink>
+            <NavLink to="/donors" className=" hover:font-bold hover:underline">
+              Donors
+            </NavLink>
+          </div>
+          <div>
+            <Button
+              variant="outline"
+              className="hover:text-red-500 hover:border-red-500 transition-colors"
+              size={"sm"}
+              onClick={() => {
+                setApiCenter((old) => {
+                  return {
+                    token: undefined,
+                    role: undefined,
+                  };
+                });
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+          </div>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" />
@@ -53,10 +81,11 @@ const ReceiverApp = () => {
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
         <main className="flex-1 overflow-auto">
           <Routes>
+            <Route path="/donors" element={<DonorAccounts />} />
             <Route path="/*" element={<ReceiverDemandsList />} />
           </Routes>
         </main>

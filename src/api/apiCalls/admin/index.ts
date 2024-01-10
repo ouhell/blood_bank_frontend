@@ -91,6 +91,34 @@ export const getAllHospitals = (config?: AxiosRequestConfig) => {
     },
   });
 };
+
+export const getPagedHospitals = (config?: AxiosRequestConfig) => {
+  return axios<Page<Hospital>>({
+    ...config,
+    url: `${mainServer}/api/admin/hospitalsPage`,
+    method: "get",
+    headers: {
+      Authorization: apiCenter.token,
+      ...config?.headers,
+    },
+  });
+};
+
+export const postHospital = (
+  data: Partial<Hospital>,
+  config?: AxiosRequestConfig
+) => {
+  return axios<Hospital>({
+    ...config,
+    url: `${mainServer}/api/admin/hospitals`,
+    method: "post",
+    data: data,
+    headers: {
+      Authorization: apiCenter.token,
+      ...config?.headers,
+    },
+  });
+};
 type SuggestionRequest = {
   type: string;
   id?: number;

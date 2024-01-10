@@ -36,7 +36,7 @@ const NumberedPagination = ({
   totalPages,
   onClickPage,
 }: Props) => {
-  const isLastPage = currentPageNumber === totalPages;
+  const isLastPage = currentPageNumber >= totalPages;
   const isFirstPage = currentPageNumber === 1;
 
   const currentPage: PageData = {

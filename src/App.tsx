@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
+
 import AdminApp from "./containers/AdminApp";
 import { Toaster } from "@/components/ui/sonner";
 import DoctorApp from "./containers/DoctorApp";
@@ -7,6 +7,13 @@ import Home from "./containers/Home";
 import { useApiCenter } from "./api/apiCenter";
 import DonorApp from "./containers/DonorApp";
 import ReceiverApp from "./containers/ReceiverApp";
+
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import "./App.css";
+import { AnimatePresence } from "framer-motion";
 
 function App() {
   const [apiCenter, setApiCenter] = useApiCenter();
@@ -30,9 +37,11 @@ function App() {
   return (
     <>
       <Toaster />
-      <Routes>
-        <Route path="/*" element={app} />
-      </Routes>
+      <AnimatePresence>
+        <Routes>
+          <Route path="/*" element={app} />
+        </Routes>
+      </AnimatePresence>
     </>
   );
 }

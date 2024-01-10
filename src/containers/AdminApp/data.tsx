@@ -12,6 +12,8 @@ import ListAccounts from "./pages/ListAccounts";
 import ListDemands from "./pages/ListDemands";
 import ListDonations from "./pages/ListDonations";
 import ListAppointments from "./pages/ListAppointments";
+import ListHospitals from "./pages/ListHospitals";
+import AddHospital from "./pages/AddHospital";
 
 export type RouteData = {
   path: string;
@@ -86,23 +88,23 @@ const managementRoutes: RouteConfig[] = [
     ],
     icon: Calendar,
   },
-  // {
-  //   parentPath: "",
-  //   name: "Hospitals",
-  //   routes: [
-  //     {
-  //       name: "Add Hospital",
-  //       path: "/hospitals/add",
-  //       element: null,
-  //     },
-  //     {
-  //       name: "List Hospitals",
-  //       path: "/hospitals",
-  //       element: null,
-  //     },
-  //   ],
-  //   icon: Building2,
-  // },
+  {
+    parentPath: "",
+    name: "Hospitals",
+    routes: [
+      {
+        name: "Add Hospital",
+        path: "/hospitals/add",
+        element: <AddHospital />,
+      },
+      {
+        name: "List Hospitals",
+        path: "/hospitals",
+        element: <ListHospitals />,
+      },
+    ],
+    icon: Building2,
+  },
 ];
 
 export const routeDomains: RouteDomain[] = [
