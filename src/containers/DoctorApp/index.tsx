@@ -16,6 +16,7 @@ import {
 
 import "./doctor.css";
 import { useApiCenter } from "@/api/apiCenter";
+import { Button } from "@/components/ui/button";
 
 const DoctorApp = () => {
   const [apiCenter, setApiCenter] = useApiCenter();
@@ -28,7 +29,25 @@ const DoctorApp = () => {
             <Stethoscope className="text-red-600 " />
             <h3 className="font-semibold text-xl ">LifeNectar</h3>
           </div>
-          <DropdownMenu>
+          <div>
+            <Button
+              variant="outline"
+              className="hover:text-red-500 hover:border-red-500 transition-colors"
+              size={"sm"}
+              onClick={() => {
+                setApiCenter((old) => {
+                  return {
+                    token: undefined,
+                    role: undefined,
+                  };
+                });
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+          </div>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" />
@@ -53,7 +72,7 @@ const DoctorApp = () => {
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
         <main className="flex-1 overflow-auto">
           <Routes>

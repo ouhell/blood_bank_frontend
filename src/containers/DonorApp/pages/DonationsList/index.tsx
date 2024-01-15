@@ -211,7 +211,7 @@ function AppointmentsList() {
                       setQuantity(Math.max(1, Math.min(8, numeric)));
                     }}
                   />
-                  <div className="col-span-3 whitespace-nowrap">
+                  <div className="col-span-3 whitespace-nowrap w-14 max-w-14 min-w-14">
                     {quantity * 0.25} Litre
                   </div>
                 </div>
